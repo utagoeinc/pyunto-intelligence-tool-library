@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload - Pyunto Intelligence Demo</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .upload-area {
+            border: 2px dashed #ccc;
+            border-radius: 8px;
+            padding: 30px;
+            text-align: center;
+            margin: 20px 0;
+            transition: all 0.3s;
+        }
+        .upload-area:hover, .upload-area.dragover {
+            border-color: #0d6efd;
+            background-color: rgba(13, 110, 253, 0.05);
+        }
+        .preview-container {
+            max-width: 300px;
+            margin: 20px auto;
+            display: none;
+        }
+        .preview-image {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="{{ url_for('index') }}">Pyunto Intelligence Demo</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('index') }}">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="{{ url_for('upload_file') }}">Upload</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('settings') }}">Settings</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <div class="alert alert-info">
+            <ul class="mb-0">
+                {% for message in messages %}
+                <li>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+        {% endwith %}
+
+        <h1 class="mb-4">Upload Image for Analysis</h1>
+        
+        <div class="card">
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data" id="upload-form">
+                    <div class="mb-3">
+                        <label for="assistant_id" class="form-label">Assistant ID (optional)</label>
+                        <input type="text" class="form-control" id="assistant_id" name="assistant_id" placeholder="Leave empty to use default assistant">
+                        <div class="form-text">If left empty, the default assistant configured in settings will be used.</div>
+                    </div>
+                    
+                    <div class="upload-area" id="upload-area">
+                        <p>Drag & drop your image here or click to select</p>
+                        <input type="file" class="form-control" id="file" name="file" accept="image/*" style="display: none;">
+                        <button type="button" class="btn btn-outline-primary mt-2" id="select-file-btn">Select File</button>
+                    </div>
+                    
+                    <div class="preview-container" id="preview-container">
+                        <img src="" id="preview-image" class="preview-image">
+                        <div class="text-center mt-2">
+                            <button type="button" class="btn btn-outline-danger btn-sm" id="remove-file-btn">Remove</button>
+                        </div>
+                    </div>
+                    
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-primary" id="analyze-btn" disabled>Analyze with Pyunto Intelligence</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="card mt-4">
+            <div class="card-header">Supported File Types</div>
+            <div class="card-body">
+                <p class="card-text">The following image formats are supported:</p>
+                <ul>
+                    <li>JPEG (.jpg, .jpeg)</li>
+                    <li>PNG (.png)</li>
+                    <li>GIF (.gif)</li>
+                </ul>
+                <p class="card-text">Maximum file size: 10MB</p>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-light py-3 mt-5">
+        <div class="container text-center">
+            <p class="text-muted mb-0">
+                &copy; 2024 Pyunto Intelligence. All rights reserved.
+            </p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const uploadArea = document.getElementById('upload-area');
+            const fileInput = document.getElementById('file');
+            const selectFileBtn = document.getElementById('select-file-btn');
+            const previewContainer = document.getElementById('preview-container');
+            const previewImage = document.getElementById('preview-image');
+            const removeFileBtn = document.getElementById('remove-file-btn');
+            const analyzeBtn = document.getElementById('analyze-btn');
+            
+            // Open file selector when clicking the upload area or button
+            uploadArea.addEventListener('click', function() {
+                fileInput.click();
+            });
+            
+            selectFileBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                fileInput.click();
+            });
+            
+            // Handle file selection
+            fileInput.addEventListener('change', function() {
+                handleFiles(this.files);
+            });
+            
+            // Handle drag and drop
+            uploadArea.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                uploadArea.classList.add('dragover');
+            });
+            
+            uploadArea.addEventListener('dragleave', function() {
+                uploadArea.classList.remove('dragover');
+            });
+            
+            uploadArea.addEventListener('drop', function(e) {
+                e.preventDefault();
+                uploadArea.classList.remove('dragover');
+                handleFiles(e.dataTransfer.files);
+            });
+            
+            // Remove selected file
+            removeFileBtn.addEventListener('click', function() {
+                fileInput.value = '';
+                previewContainer.style.display = 'none';
+                uploadArea.style.display = 'block';
+                analyzeBtn.disabled = true;
+            });
+            
+            // Handle files function
+            function handleFiles(files) {
+                if (files.length === 0) return;
+                
+                const file = files[0];
+                
+                // Check if file is an image
+                if (!file.type.match('image.*')) {
+                    alert('Please select an image file');
+                    return;
+                }
+                
+                // Check file size (10MB max)
+                if (file.size > 10 * 1024 * 1024) {
+                    alert('File is too large. Maximum size is 10MB');
+                    return;
+                }
+                
+                // Show preview
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    previewImage.src = e.target.result;
+                    previewContainer.style.display = 'block';
+                    uploadArea.style.display = 'none';
+                    analyzeBtn.disabled = false;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    </script>
+</body>
+</html>

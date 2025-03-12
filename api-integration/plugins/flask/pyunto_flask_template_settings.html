@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - Pyunto Intelligence Demo</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="{{ url_for('index') }}">Pyunto Intelligence Demo</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('index') }}">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('upload_file') }}">Upload</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="{{ url_for('settings') }}">Settings</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <div class="alert alert-success">
+            <ul class="mb-0">
+                {% for message in messages %}
+                <li>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+        {% endwith %}
+
+        <h1 class="mb-4">Pyunto Intelligence Settings</h1>
+        
+        <div class="card">
+            <div class="card-body">
+                <form method="post">
+                    <div class="mb-3">
+                        <label for="api_key" class="form-label">API Key</label>
+                        <input type="password" class="form-control" id="api_key" name="api_key" value="{{ api_key }}" required>
+                        <div class="form-text">Your Pyunto Intelligence API key from your dashboard at <a href="https://a.pyunto.com" target="_blank">a.pyunto.com</a>.</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="assistant_id" class="form-label">Default Assistant ID</label>
+                        <input type="text" class="form-control" id="assistant_id" name="assistant_id" value="{{ assistant_id }}">
+                        <div class="form-text">The default Assistant ID to use when not specified in requests.</div>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">Save Settings</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="card mt-4">
+            <div class="card-header">Where to find your credentials</div>
+            <div class="card-body">
+                <h5>API Key</h5>
+                <ol>
+                    <li>Log in to your <a href="https://a.pyunto.com" target="_blank">Pyunto Intelligence Dashboard</a></li>
+                    <li>Go to "API Keys" section</li>
+                    <li>Copy your API key</li>
+                </ol>
+                
+                <h5 class="mt-4">Assistant ID</h5>
+                <ol>
+                    <li>Log in to your <a href="https://a.pyunto.com" target="_blank">Pyunto Intelligence Dashboard</a></li>
+                    <li>Go to "Smart Assistants" section</li>
+                    <li>Select the assistant you want to use</li>
+                    <li>Copy the Assistant ID</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-light py-3 mt-5">
+        <div class="container text-center">
+            <p class="text-muted mb-0">
+                &copy; 2024 Pyunto Intelligence. All rights reserved.
+            </p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
