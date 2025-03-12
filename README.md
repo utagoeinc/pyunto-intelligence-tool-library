@@ -28,36 +28,11 @@ To get started with Pyunto Intelligence, you'll need:
 2. Your API key (available in your dashboard after subscription)
 3. The appropriate sample code from this repository for your use case
 
-For detailed instructions on getting started, visit our [Getting Started Guide](./docs/getting-started.md).
 
 ## Installation
 
 Each tool or utility in this repository may have specific installation requirements. Please refer to the README.md file in each directory for specific installation and usage instructions.
 
-## Examples
-
-Here's a quick example using the Python client for image analysis:
-
-```python
-import pyunto_client
-
-# Initialize the client with your API key
-client = pyunto_client.PyuntoClient(api_key="YOUR_API_KEY")
-
-# Analyze an image with a specific feature
-result = client.analyze_image(
-    image_path="./sample_image.jpg",
-    feature="identify_food_items"
-)
-
-print(result)
-```
-
-For more examples, check the [examples directory](./docs/examples).
-
-## Contributing
-
-We welcome contributions to this library! Please see [CONTRIBUTING.md](./CONTRIBUTING.md) for details on how to contribute.
 
 ## License
 
@@ -91,7 +66,7 @@ SOFTWARE.
 
 For support with this library, please open an issue in this repository.
 
-For questions about your Pyunto Intelligence subscription or account, please contact: pyunto@utagoe.com
+For questions about your Pyunto Intelligence subscription or account, please contact: pyunto-contact@utagoe.com
 
 ## Related Resources
 
